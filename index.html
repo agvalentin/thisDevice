@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>This Device</title>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 3%;
+        }
+    </style>
+</head>
+<body>
+    <!-- Add this container for displaying the information -->
+    <div id="device-info"></div>
+
+    <script>
+        // Create a function to append info to the container
+        function displayInfo(text) {
+            const container = document.getElementById('device-info');
+            const p = document.createElement('p');
+            p.textContent = text;
+            container.appendChild(p);
+        }
+
+        // Modify the IP info section
+        fetch('https://ipinfo.io/json?token=b3a9de81c64eee')
+            .then(response => response.json())
+            .then(data => {
+                userIP = data.ip;
+                city = data.city;
+                country = data.country;
+                displayInfo(`IP Address: ${userIP}`);
+                displayInfo(`Location: ${city}, ${country}`);
+            })
+            .catch(error => displayInfo('Error fetching location data'));
+
+        // Get client's time
+        const now = new Date();
+        const options = {
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true
+        };
+        const timeString = `Today at ${new Intl.DateTimeFormat('en-US', options).format(now)}`;
+        displayInfo(timeString);
+
+        // Detect client device
+        const detectDeviceType = () => {
+            const userAgent = navigator.userAgent;
+
+            // Check for mobile and tablet devices
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)) {
+                return 'Mobile';
+            } else if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(userAgent)) {
+                return 'Tablet';
+            }
+
+            // Check for desktop OS types
+            if (userAgent.includes("Win")) return "Windows";
+            if (userAgent.includes("Mac")) return "Mac";
+            if (userAgent.includes("Linux")) return "Linux";
+            if (userAgent.includes("X11")) return "UNIX";
+
+            return "Unknown Desktop";
+        };
+
+        displayInfo(`Device Type: ${detectDeviceType()}`);
+
+        // Detect client browser
+        const detectBrowser = () => {
+            const userAgent = navigator.userAgent;
+            let browserName = "Unknown Browser";
+            let fullVersion = "Unknown Version";
+
+            // Detect Chrome
+            if (/Chrome/.test(userAgent)) {
+                browserName = "Chrome";
+                fullVersion = userAgent.match(/Chrome\/([0-9.]+)/)[1];
+            }
+            // Detect Firefox
+            else if (/Firefox/.test(userAgent)) {
+                browserName = "Firefox";
+                fullVersion = userAgent.match(/Firefox\/([0-9.]+)/)[1];
+            }
+            // Detect Safari
+            else if (/Safari/.test(userAgent) && !/Chrome/.test(userAgent)) {
+                browserName = "Safari";
+                fullVersion = userAgent.match(/Version\/([0-9.]+)/)[1];
+            }
+            // Detect Edge
+            else if (/Edg/.test(userAgent)) {
+                browserName = "Edge";
+                fullVersion = userAgent.match(/Edg\/([0-9.]+)/)[1];
+            }
+            // Detect Internet Explorer
+            else if (/MSIE/.test(userAgent) || /Trident/.test(userAgent)) {
+                browserName = "Internet Explorer";
+                fullVersion = userAgent.match(/(?:MSIE |rv:)([0-9.]+)/)[1];
+            }
+
+            return `${browserName} ${fullVersion}`;
+        };
+
+        displayInfo(`Browser: ${detectBrowser()}`);
+    </script>
+</body>
+</html>
