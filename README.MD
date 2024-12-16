@@ -10,5 +10,3 @@ Displays information about the user's device, including:
 ## Usage
 
 Simply open `index.html` in a web browser to see your device information displayed.
-
-/Leo
